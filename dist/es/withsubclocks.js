@@ -1,5 +1,5 @@
 // Public interface
-var S = function S(fn, value) {
+const S = function S(fn, value) {
     var owner = Owner, clock = RunningClock === null ? RootClock : RunningClock, running = RunningNode;
     if (owner === null)
         console.warn("computations created without a root or parent will never be disposed");
@@ -262,8 +262,8 @@ S.subclock = function subclock(fn) {
 };
 // Internal implementation
 /// Graph classes and operations
-var Clock = /** @class */ (function () {
-    function Clock(parent) {
+class Clock {
+    constructor(parent) {
         this.parent = parent;
         this.id = Clock.count++;
         this.state = CURRENT;
@@ -282,26 +282,24 @@ var Clock = /** @class */ (function () {
             this.depth = 0;
         }
     }
-    Clock.prototype.time = function () {
+    time() {
         var time = this.subtime, p = this;
         while ((p = p.parent) !== null)
             time += p.subtime;
         return time;
-    };
-    Clock.count = 0;
-    return Clock;
-}());
-var DataNode = /** @class */ (function () {
-    function DataNode(clock, value) {
+    }
+}
+Clock.count = 0;
+class DataNode {
+    constructor(clock, value) {
         this.clock = clock;
         this.value = value;
         this.pending = NOTPENDING;
         this.log = null;
     }
-    return DataNode;
-}());
-var ComputationNode = /** @class */ (function () {
-    function ComputationNode(clock, fn, value) {
+}
+class ComputationNode {
+    constructor(clock, fn, value) {
         this.clock = clock;
         this.fn = fn;
         this.value = value;
@@ -316,19 +314,17 @@ var ComputationNode = /** @class */ (function () {
         this.cleanups = null;
         this.age = this.clock.time();
     }
-    return ComputationNode;
-}());
-var Log = /** @class */ (function () {
-    function Log() {
+}
+class Log {
+    constructor() {
         this.node1 = null;
         this.node1slot = 0;
         this.nodes = null;
         this.nodeslots = null;
     }
-    return Log;
-}());
-var NodePreClockLog = /** @class */ (function () {
-    function NodePreClockLog() {
+}
+class NodePreClockLog {
+    constructor() {
         this.count = 0;
         this.clocks = []; // [clock], where clock.parent === node.clock
         this.ages = []; // clock.id -> node.age
@@ -336,38 +332,35 @@ var NodePreClockLog = /** @class */ (function () {
         this.uclocks = [];
         this.uclockids = [];
     }
-    return NodePreClockLog;
-}());
-var ClockPreClockLog = /** @class */ (function () {
-    function ClockPreClockLog() {
+}
+class ClockPreClockLog {
+    constructor() {
         this.count = 0;
         this.clockcounts = []; // clock.id -> ref count
         this.clocks = []; // clock.id -> clock 
         this.ids = []; // [clock.id]
     }
-    return ClockPreClockLog;
-}());
-var Queue = /** @class */ (function () {
-    function Queue() {
+}
+class Queue {
+    constructor() {
         this.items = [];
         this.count = 0;
     }
-    Queue.prototype.reset = function () {
+    reset() {
         this.count = 0;
-    };
-    Queue.prototype.add = function (item) {
+    }
+    add(item) {
         this.items[this.count++] = item;
-    };
-    Queue.prototype.run = function (fn) {
+    }
+    run(fn) {
         var items = this.items;
         for (var i = 0; i < this.count; i++) {
             fn(items[i]);
             items[i] = null;
         }
         this.count = 0;
-    };
-    return Queue;
-}());
+    }
+}
 // Constants
 var NOTPENDING = {}, CURRENT = 0, STALE = 1, RUNNING = 2;
 // "Globals" used to keep track of current system state
