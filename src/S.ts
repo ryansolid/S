@@ -20,8 +20,8 @@ export function comp<T>(fn: (v: T | undefined) => T, value?: T): () => T {
 };
 
 
-export function root<T>(fn: (dispose: () => void) => T): T {
-  var owner = Owner,
+export function root<T>(fn: (dispose: () => void) => T, detachedOwner?: ComputationNode): T {
+  var owner = Owner || detachedOwner || null,
     disposer = fn.length === 0 ? null : function _dispose() {
       if (root === null) {
         // nothing to dispose
@@ -186,6 +186,22 @@ export function isListening() {
   return Listener !== null;
 };
 
+// context API
+export function getContextOwner() {
+  return Owner;
+}
+
+export function setContext(key: symbol | string, value: any) {
+  if (Owner === null) return console.warn("Context keys cannot be set without a root or parent");
+  const context = Owner.context || (Owner.context = {});
+  context[key] = value;
+}
+
+export function lookupContext(key: symbol | string) {
+  if (Owner === null) return console.warn("Context keys cannot be looked up without a root or parent");
+  return lookup(Owner, key);
+}
+
 // Internal implementation
 
 /// Graph classes and operations
@@ -246,6 +262,7 @@ class DataNode {
 class ComputationNode {
   fn = null as ((v: any) => any) | null;
   value = undefined as any;
+  context = undefined as any;
   age = -1
   state = CURRENT;
   source1 = null as null | Log;
@@ -253,6 +270,7 @@ class ComputationNode {
   sources = null as null | Log[];
   sourceslots = null as null | number[];
   log = null as Log | null;
+  owner = Owner;
   owned = null as ComputationNode[] | null;
   cleanups = null as (((final: boolean) => void)[]) | null;
 
@@ -319,6 +337,10 @@ var RootClock = new Clock(),
   LastNode = null as ComputationNode | null; // cached unused node, for re-use
 
 // Functions
+function lookup(owner: ComputationNode, key: symbol | string): any {
+  return (owner && owner.context && owner.context[key]) || (owner.owner && lookup(owner.owner, key));
+}
+
 var makeComputationNodeResult = { node: null as null | ComputationNode, value: undefined as any };
 function makeComputationNode<T>(fn: (v: T | undefined) => T, value: T | undefined, orphan: boolean, sample: boolean): { node: ComputationNode | null, value: T } {
   var node = getCandidateNode(),

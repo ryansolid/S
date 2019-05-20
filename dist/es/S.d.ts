@@ -3,7 +3,7 @@ export interface DataSignal<T> {
     (val: T): T;
 }
 export declare function comp<T>(fn: (v: T | undefined) => T, value?: T): () => T;
-export declare function root<T>(fn: (dispose: () => void) => T): T;
+export declare function root<T>(fn: (dispose: () => void) => T, detachedOwner?: ComputationNode): T;
 export declare function on<T>(ev: () => any, fn: (v?: T) => T, seed?: T, onchanges?: boolean): () => T;
 export declare function effect<T>(fn: (v: T | undefined) => T, value?: T): void;
 export declare function data<T>(value: T): (value?: T) => T;
@@ -27,6 +27,7 @@ export { INode as Node, IDataNode as DataNode, IClock as Clock };
 export declare function disposeNode(node: ComputationNode): void;
 export declare function isFrozen(): boolean;
 export declare function isListening(): boolean;
+export declare function getContextOwner(): ComputationNode | null;
 declare class DataNode {
     value: any;
     pending: any;

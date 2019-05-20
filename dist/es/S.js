@@ -13,8 +13,8 @@ export function comp(fn, value) {
     }
 }
 ;
-export function root(fn) {
-    var owner = Owner, disposer = fn.length === 0 ? null : function _dispose() {
+export function root(fn, detachedOwner) {
+    var owner = Owner || detachedOwner || null, disposer = fn.length === 0 ? null : function _dispose() {
         if (root === null) {
             // nothing to dispose
         }
@@ -157,6 +157,19 @@ export function isListening() {
     return Listener !== null;
 }
 ;
+// context API
+export function getContextOwner() {
+    return Owner;
+}
+// export function setContext(key: symbol | string, value: any) {
+//   if (Owner === null) return console.warn("Context keys cannot be set without a root or parent");
+//   const context = Owner.context || (Owner.context = {});
+//   context[key] = value;
+// }
+// export function lookupContext(key: symbol | string) {
+//   if (Owner === null) return console.warn("Context keys cannot be looked up without a root or parent");
+//   return lookup(Owner, key);
+// }
 // Internal implementation
 /// Graph classes and operations
 class Clock {
@@ -214,6 +227,7 @@ class ComputationNode {
     constructor() {
         this.fn = null;
         this.value = undefined;
+        // context = undefined as any;
         this.age = -1;
         this.state = CURRENT;
         this.source1 = null;
@@ -221,6 +235,7 @@ class ComputationNode {
         this.sources = null;
         this.sourceslots = null;
         this.log = null;
+        // owner = Owner;
         this.owned = null;
         this.cleanups = null;
     }
@@ -276,6 +291,9 @@ Listener = null, // currently listening computation
 Owner = null, // owner for new computations
 LastNode = null; // cached unused node, for re-use
 // Functions
+// function lookup(owner: ComputationNode, key: symbol | string): any {
+//   return (owner && owner.context && owner.context[key]) || (owner.owner && lookup(owner.owner, key));
+// }
 var makeComputationNodeResult = { node: null, value: undefined };
 function makeComputationNode(fn, value, orphan, sample) {
     var node = getCandidateNode(), owner = Owner, listener = Listener, toplevel = RunningClock === null;
