@@ -34,7 +34,7 @@ describe("S.data", function () {
     it("does not throw if set to the same value twice in a computation", function () {
         S.root(() => {
             var d = S.data(1);
-            S(() => {
+            S.comp(() => {
                 d(2);
                 d(2);
             });
@@ -45,7 +45,7 @@ describe("S.data", function () {
     it("throws if set to two different values in a computation", function () {
         S.root(() => {
             var d = S.data(1);
-            S(() => {
+            S.comp(() => {
                 d(2);
                 expect(() => d(3)).toThrowError(/conflict/);
             });

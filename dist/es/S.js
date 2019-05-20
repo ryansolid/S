@@ -1,5 +1,5 @@
 // Public interface
-var S = function S(fn, value) {
+export function comp(fn, value) {
     if (Owner === null)
         console.warn("computations created without a root or parent will never be disposed");
     var _a = makeComputationNode(fn, value, false, false), node = _a.node, _value = _a.value;
@@ -11,11 +11,9 @@ var S = function S(fn, value) {
             return node.current();
         };
     }
-};
-// compatibility with commonjs systems that expect default export to be at require('s.js').default rather than just require('s-js')
-Object.defineProperty(S, 'default', { value: S });
-export default S;
-S.root = function root(fn) {
+}
+;
+export function root(fn) {
     var owner = Owner, disposer = fn.length === 0 ? null : function _dispose() {
         if (root === null) {
             // nothing to dispose
@@ -38,12 +36,13 @@ S.root = function root(fn) {
         root = null;
     }
     return result;
-};
-S.on = function on(ev, fn, seed, onchanges) {
+}
+;
+export function on(ev, fn, seed, onchanges) {
     if (Array.isArray(ev))
         ev = callAll(ev);
     onchanges = !!onchanges;
-    return S(on, seed);
+    return comp(on, seed);
     function on(value) {
         var listener = Listener;
         ev();
@@ -56,17 +55,18 @@ S.on = function on(ev, fn, seed, onchanges) {
         }
         return value;
     }
-};
+}
+;
 function callAll(ss) {
     return function all() {
         for (var i = 0; i < ss.length; i++)
             ss[i]();
     };
 }
-S.effect = function effect(fn, value) {
+export function effect(fn, value) {
     makeComputationNode(fn, value, false, false);
-};
-S.data = function data(value) {
+}
+export function data(value) {
     var node = new DataNode(value);
     return function data(value) {
         if (arguments.length === 0) {
@@ -76,8 +76,9 @@ S.data = function data(value) {
             return node.next(value);
         }
     };
-};
-S.value = function value(current, eq) {
+}
+;
+export function value(current, eq) {
     var node = new DataNode(current), age = -1;
     return function value(update) {
         if (arguments.length === 0) {
@@ -96,8 +97,9 @@ S.value = function value(current, eq) {
             return update;
         }
     };
-};
-S.freeze = function freeze(fn) {
+}
+;
+export function freeze(fn) {
     var result = undefined;
     if (RunningClock !== null) {
         result = fn();
@@ -114,41 +116,47 @@ S.freeze = function freeze(fn) {
         }
     }
     return result;
-};
-S.sample = function sample(fn) {
+}
+;
+export function sample(fn) {
     var result, listener = Listener;
     Listener = null;
     result = fn();
     Listener = listener;
     return result;
-};
-S.cleanup = function cleanup(fn) {
+}
+export function cleanup(fn) {
     if (Owner === null)
         console.warn("cleanups created without a root or parent will never be run");
     else if (Owner.cleanups === null)
         Owner.cleanups = [fn];
     else
         Owner.cleanups.push(fn);
-};
+}
+;
 // experimental : exposing node constructors and some state
-S.makeDataNode = function makeDataNode(value) {
+export function makeDataNode(value) {
     return new DataNode(value);
-};
-S.makeComputationNode = makeComputationNode;
-S.disposeNode = function disposeNode(node) {
+}
+;
+export { makeComputationNode };
+export function disposeNode(node) {
     if (RunningClock !== null) {
         RootClock.disposes.add(node);
     }
     else {
         dispose(node);
     }
-};
-S.isFrozen = function isFrozen() {
+}
+;
+export function isFrozen() {
     return RunningClock !== null;
-};
-S.isListening = function isListening() {
+}
+;
+export function isListening() {
     return Listener !== null;
-};
+}
+;
 // Internal implementation
 /// Graph classes and operations
 var Clock = /** @class */ (function () {
@@ -477,14 +485,14 @@ function updateNode(node) {
         var owner = Owner, listener = Listener;
         Owner = Listener = node;
         node.state = RUNNING;
-        cleanup(node, false);
+        cleanupNode(node, false);
         node.value = node.fn(node.value);
         node.state = CURRENT;
         Owner = owner;
         Listener = listener;
     }
 }
-function cleanup(node, final) {
+function cleanupNode(node, final) {
     var source1 = node.source1, sources = node.sources, sourceslots = node.sourceslots, cleanups = node.cleanups, owned = node.owned, i, len;
     if (cleanups !== null) {
         for (i = 0; i < cleanups.length; i++) {
@@ -531,5 +539,5 @@ function cleanupSource(source, slot) {
 function dispose(node) {
     node.fn = null;
     node.log = null;
-    cleanup(node, true);
+    cleanupNode(node, true);
 }

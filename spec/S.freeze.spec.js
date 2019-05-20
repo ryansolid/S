@@ -13,7 +13,7 @@ describe("S.freeze", function () {
 	it("halts propagation within its scope", function () {
         S.root(function () {
 			var d = S.data(1),
-				f = S(function() { return d(); });
+				f = S.comp(function() { return d(); });
 				
 			S.freeze(function () {
 				d(2);

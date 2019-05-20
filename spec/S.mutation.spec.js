@@ -4,7 +4,7 @@ describe("Computations which modify data", function () {
             var a = S.data(false),
                 b = S.data(0),
                 cb,
-                c = S(function () { if (a()) { b(1); cb = b(); a(false); } });
+                c = S.comp(function () { if (a()) { b(1); cb = b(); a(false); } });
             
             b(0);
             a(true);
@@ -20,8 +20,8 @@ describe("Computations which modify data", function () {
                 a = S.data(false),
                 b = S.data(0),
                 db,
-                c = S(function () { if (a()) { seq += "c"; b(1); a(false); } }),
-                d = S(function () { if (a()) { seq += "d"; db = b(); } });
+                c = S.comp(function () { if (a()) { seq += "c"; b(1); a(false); } }),
+                d = S.comp(function () { if (a()) { seq += "d"; db = b(); } });
             
             b(0);
             seq = "";
@@ -38,7 +38,7 @@ describe("Computations which modify data", function () {
             var seq = "",
                 a = S.data(0);
         
-            S(function () { seq += a(); if (a() < 10) a(a() + 1); });
+            S.comp(function () { seq += a(); if (a() < 10) a(a() + 1); });
             
             expect(seq).toBe("012345678910");
             expect(a()).toBe(10);
@@ -60,11 +60,11 @@ describe("Computations which modify data", function () {
             var seq = "",
                 a1 = S.data(0),
                 c1 = S.data(0),
-                b1 = S(function () { a1(); }),
-                b2 = S(function () { c1(a1()); }),
-                b3 = S(function () { a1(); }),
-                d1 = S(function () { b1(); seq += "c4(" + c1() + ")"; }),
-                d2 = S(function () { b3(); seq += "c5(" + c1() + ")"; });
+                b1 = S.comp(function () { a1(); }),
+                b2 = S.comp(function () { c1(a1()); }),
+                b3 = S.comp(function () { a1(); }),
+                d1 = S.comp(function () { b1(); seq += "c4(" + c1() + ")"; }),
+                d2 = S.comp(function () { b3(); seq += "c5(" + c1() + ")"; });
 
             seq = "";
             a1(1);

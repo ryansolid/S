@@ -1,29 +1,29 @@
 /* global S, describe, it, expect, beforeEach, jasmine */
 
-describe("S()", function () {
+describe("S.comp()", function () {
     describe("creation", function () {
         it("throws if no function passed in", function () {
             S.root(function () {
-                expect(function() { S(); }).toThrow();
+                expect(function() { S.comp(); }).toThrow();
             });
         });
 
         it("throws if arg is not a function", function () {
             S.root(function () {
-                expect(function() { S(1); }).toThrow();
+                expect(function() { S.comp(1); }).toThrow();
             });
         });
 
         it("generates a function", function () {
             S.root(function () {
-                var f = S(function () { return 1; });
+                var f = S.comp(function () { return 1; });
                 expect(f).toEqual(jasmine.any(Function));
             });
         });
 
         it("returns initial value of wrapped function", function () {
             S.root(function () {
-                var f = S(function () { return 1; });
+                var f = S.comp(function () { return 1; });
                 expect(f()).toBe(1);
             });
         });
@@ -33,7 +33,7 @@ describe("S()", function () {
         it("occurs once intitially", function () {
             S.root(function () {
                 var spy = jasmine.createSpy(),
-                    f = S(spy);
+                    f = S.comp(spy);
                 expect(spy.calls.count()).toBe(1);
             });
         });
@@ -41,7 +41,7 @@ describe("S()", function () {
         it("does not re-occur when read", function () {
             S.root(function () {
                 var spy = jasmine.createSpy(),
-                    f = S(spy);
+                    f = S.comp(spy);
                 f(); f(); f();
 
                 expect(spy.calls.count()).toBe(1);
@@ -54,7 +54,7 @@ describe("S()", function () {
             S.root(function () {
                 var d = S.data(1),
                     fevals = 0,
-                    f = S(function () { fevals++; return d(); });
+                    f = S.comp(function () { fevals++; return d(); });
 
                 fevals = 0;
 
@@ -67,7 +67,7 @@ describe("S()", function () {
             S.root(function () {
                 var d = S.data(1),
                     fevals = 0,
-                    f = S(function () { fevals++; return d(); });
+                    f = S.comp(function () { fevals++; return d(); });
 
                 fevals = 0;
 
@@ -80,7 +80,7 @@ describe("S()", function () {
             S.root(function () {
                 var d = S.data(1),
                     fevals = 0,
-                    f = S(function () { fevals++; return d(); });
+                    f = S.comp(function () { fevals++; return d(); });
 
                 fevals = 0;
 
@@ -98,7 +98,7 @@ describe("S()", function () {
             t = S.data(1);
             e = S.data(2);
             fevals = 0;
-            f = S(function () { fevals++; return i() ? t() : e(); });
+            f = S.comp(function () { fevals++; return i() ? t() : e(); });
             fevals = 0;
         }
 
@@ -144,9 +144,9 @@ describe("S()", function () {
             S.root(function () {
                 var order = "",
                     a = S.data(0),
-                    b = S(function () { order += "b"; return a() + 1; }),
-                    c = S(function () { order += "c"; return b() || d(); }),
-                    d = S(function () { order += "d"; return a() + 10; });
+                    b = S.comp(function () { order += "b"; return a() + 1; }),
+                    c = S.comp(function () { order += "c"; return b() || d(); }),
+                    d = S.comp(function () { order += "d"; return a() + 10; });
 
                 expect(order).toBe("bcd");
 
@@ -169,7 +169,7 @@ describe("S()", function () {
         it("does not register a dependency", function () {
             S.root(function () {
                 var fevals = 0,
-                    f = S(function () { fevals++; d = S.data(1); });
+                    f = S.comp(function () { fevals++; d = S.data(1); });
                 fevals = 0;
                 d(2);
                 expect(fevals).toBe(0);
@@ -180,7 +180,7 @@ describe("S()", function () {
     describe("from a function with no return value", function () {
         it("reads as undefined", function () {
             S.root(function () {
-                var f = S(function () { });
+                var f = S.comp(function () { });
                 expect(f()).not.toBeDefined();
             });
         });
@@ -190,7 +190,7 @@ describe("S()", function () {
         it("reduces seed value", function () {
             S.root(function () {
                 var a = S.data(5),
-                    f = S(function (v) { return v + a(); }, 5);
+                    f = S.comp(function (v) { return v + a(); }, 5);
                 expect(f()).toBe(10);
                 a(6);
                 expect(f()).toBe(16);
@@ -204,9 +204,9 @@ describe("S()", function () {
         function init() {
             d = S.data(1),
             fcount = 0,
-            f = S(function () { fcount++; return d(); }),
+            f = S.comp(function () { fcount++; return d(); }),
             gcount = 0,
-            g = S(function () { gcount++; return f(); });
+            g = S.comp(function () { gcount++; return f(); });
         }
 
         it("does not cause re-evaluation", function () {
@@ -249,7 +249,7 @@ describe("S()", function () {
                 var d = S.data(1);
 
                 expect(function () {
-                    S(function () { d(); d(2); });
+                    S.comp(function () { d(); d(2); });
                 }).toThrow();
             });
         });
@@ -257,12 +257,12 @@ describe("S()", function () {
         it("throws when continually setting an indirect dependency", function () {
             S.root(function () {
                 var d = S.data(1),
-                    f1 = S(function () { return d(); }),
-                    f2 = S(function () { return f1(); }),
-                    f3 = S(function () { return f2(); });
+                    f1 = S.comp(function () { return d(); }),
+                    f2 = S.comp(function () { return f1(); }),
+                    f3 = S.comp(function () { return f2(); });
 
                 expect(function () {
-                    S(function () { f3(); d(2); });
+                    S.comp(function () { f3(); d(2); });
                 }).toThrow();
             });
         });
@@ -272,7 +272,7 @@ describe("S()", function () {
         it("throws when cycle created by modifying a branch", function () {
             S.root(function () {
                 var d = S.data(1),
-                    f = S(function () { return f ? f() : d(); });
+                    f = S.comp(function () { return f ? f() : d(); });
 
                 expect(function () { d(0); }).toThrow();
             });
@@ -293,9 +293,9 @@ describe("S()", function () {
                 //
                 var seq = "",
                     a1 = S.data(true),
-                    b1 = S(function () { a1();       seq += "b1"; }),
-                    b2 = S(function () { a1();       seq += "b2"; }),
-                    c1 = S(function () { b1(), b2(); seq += "c1"; });
+                    b1 = S.comp(function () { a1();       seq += "b1"; }),
+                    b2 = S.comp(function () { a1();       seq += "b2"; }),
+                    c1 = S.comp(function () { b1(), b2(); seq += "c1"; });
         
                 seq = "";
                 a1(true);
@@ -316,13 +316,13 @@ describe("S()", function () {
                 //         v
                 //         g
                 var d = S.data(0),
-                    f1 = S(function () { return d(); }),
-                    f2 = S(function () { return d(); }),
-                    f3 = S(function () { return d(); }),
-                    f4 = S(function () { return d(); }),
-                    f5 = S(function () { return d(); }),
+                    f1 = S.comp(function () { return d(); }),
+                    f2 = S.comp(function () { return d(); }),
+                    f3 = S.comp(function () { return d(); }),
+                    f4 = S.comp(function () { return d(); }),
+                    f5 = S.comp(function () { return d(); }),
                     gcount = 0,
-                    g = S(function () { gcount++; return f1() + f2() + f3() + f4() + f5(); });
+                    g = S.comp(function () { gcount++; return f1() + f2() + f3() + f4() + f5(); });
 
                 gcount = 0;
                 d(0);
@@ -347,16 +347,16 @@ describe("S()", function () {
                 //     h
                 var d = S.data(0),
 
-                    f1 = S(function () { return d(); }),
-                    f2 = S(function () { return d(); }),
-                    f3 = S(function () { return d(); }),
+                    f1 = S.comp(function () { return d(); }),
+                    f2 = S.comp(function () { return d(); }),
+                    f3 = S.comp(function () { return d(); }),
         
-                    g1 = S(function () { return f1() + f2() + f3(); }),
-                    g2 = S(function () { return f1() + f2() + f3(); }),
-                    g3 = S(function () { return f1() + f2() + f3(); }),
+                    g1 = S.comp(function () { return f1() + f2() + f3(); }),
+                    g2 = S.comp(function () { return f1() + f2() + f3(); }),
+                    g3 = S.comp(function () { return f1() + f2() + f3(); }),
         
                     hcount = 0,
-                    h  = S(function () { hcount++; return g1() + g2() + g3(); });
+                    h  = S.comp(function () { hcount++; return g1() + g2() + g3(); });
 
                 hcount = 0;
                 d(0);

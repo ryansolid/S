@@ -8,12 +8,12 @@ describe("S.root()", function () {
                 outer,
                 innerRuns = 0;
 
-            outer = S(function () {
+            outer = S.comp(function () {
                 // register dependency to outer trigger
                 outerTrigger();
                 // inner computation
                 S.root(function () {
-                    S(function () {
+                    S.comp(function () {
                         // register dependency on inner trigger
                         innerTrigger();
                         // count total runs
@@ -41,14 +41,14 @@ describe("S.root()", function () {
 
     //it("is necessary to create a toplevel computation", function () {
     //    expect(() => {
-    //        S(() => 1)
+    //        S.comp(() => 1)
     //    }).toThrowError(/root/);
     //});
 
     it("does not freeze updates when used at top level", function () {
         S.root(() => {
             var s = S.data(1),
-                c = S(() => s());
+                c = S.comp(() => s());
             
             expect(c()).toBe(1);
 
@@ -65,11 +65,11 @@ describe("S.root()", function () {
     it("persists through entire scope when used at top level", () => {
         S.root(() => {
             var s = S.data(1),
-                c1 = S(() => s());
+                c1 = S.comp(() => s());
             
             s(2);
 
-            var c2 = S(() => s());
+            var c2 = S.comp(() => s());
 
             s(3);
 

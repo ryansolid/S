@@ -6,7 +6,7 @@ describe("S.sample(...)", function () {
                 b = S.data(2),
                 c = S.data(3),
                 d = 0,
-                e = S(function () { d++; a(); S.sample(b); c(); });
+                e = S.comp(function () { d++; a(); S.sample(b); c(); });
                 
             expect(d).toBe(1);
             

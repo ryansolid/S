@@ -1,11 +1,11 @@
-describe("S() with subcomputations", function () {
+describe("S.comp() with subcomputations", function () {
 
     it("does not register a dependency on the subcomputation", function () {
         S.root(function () {
             var d = S.data(1),
                 spy = jasmine.createSpy("spy"),
                 gspy = jasmine.createSpy("gspy"),
-                f = S(function () { spy(); var g = S(function () { gspy(); return d(); }); })
+                f = S.comp(function () { spy(); var g = S.comp(function () { gspy(); return d(); }); })
 
             spy.calls.reset();
             gspy.calls.reset();
@@ -25,10 +25,10 @@ describe("S() with subcomputations", function () {
             e = S.data(2);
             fspy = jasmine.createSpy("fspy");
             gspy = jasmine.createSpy("gspy");
-            f = S(function () {
+            f = S.comp(function () {
                 fspy();
                 d();
-                g = S(function () {
+                g = S.comp(function () {
                     gspy();
                     return e();
                 });
@@ -81,12 +81,12 @@ describe("S() with subcomputations", function () {
         it("propagates successfully", function () {
             S.root(function () {
                 var a = S.data(1),
-                    b = S(function () {
-                        var c = S(function () { return a(); });
+                    b = S.comp(function () {
+                        var c = S.comp(function () { return a(); });
                         a();
                         return { c: c };
                     }),
-                    d = S(function () {
+                    d = S.comp(function () {
                         return b().c();
                     });
                 
@@ -104,16 +104,16 @@ describe("S() with subcomputations", function () {
             S.root(function () {
                 var a = S.data(1),
                     c,
-                    b = S(function () {
-                        c = S(function () {
+                    b = S.comp(function () {
+                        c = S.comp(function () {
                             return a();
                         });
                         a();
                         return { c : c };
                     }),
-                    d = S(function () {
+                    d = S.comp(function () {
                         c();
-                        var e = S(function () {
+                        var e = S.comp(function () {
                             return a();
                         });
                         return { e : e };

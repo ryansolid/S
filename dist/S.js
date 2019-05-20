@@ -1,11 +1,11 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-    typeof define === 'function' && define.amd ? define(factory) :
-    (global.S = factory());
-}(this, (function () { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+    typeof define === 'function' && define.amd ? define(['exports'], factory) :
+    (factory((global.S = {})));
+}(this, (function (exports) { 'use strict';
 
     // Public interface
-    var S = function S(fn, value) {
+    function comp(fn, value) {
         if (Owner === null)
             console.warn("computations created without a root or parent will never be disposed");
         var _a = makeComputationNode(fn, value, false, false), node = _a.node, _value = _a.value;
@@ -17,10 +17,8 @@
                 return node.current();
             };
         }
-    };
-    // compatibility with commonjs systems that expect default export to be at require('s.js').default rather than just require('s-js')
-    Object.defineProperty(S, 'default', { value: S });
-    S.root = function root(fn) {
+    }
+    function root(fn) {
         var owner = Owner, disposer = fn.length === 0 ? null : function _dispose() {
             if (root === null) ;
             else if (RunningClock !== null) {
@@ -41,12 +39,12 @@
             root = null;
         }
         return result;
-    };
-    S.on = function on(ev, fn, seed, onchanges) {
+    }
+    function on(ev, fn, seed, onchanges) {
         if (Array.isArray(ev))
             ev = callAll(ev);
         onchanges = !!onchanges;
-        return S(on, seed);
+        return comp(on, seed);
         function on(value) {
             var listener = Listener;
             ev();
@@ -59,17 +57,17 @@
             }
             return value;
         }
-    };
+    }
     function callAll(ss) {
         return function all() {
             for (var i = 0; i < ss.length; i++)
                 ss[i]();
         };
     }
-    S.effect = function effect(fn, value) {
+    function effect(fn, value) {
         makeComputationNode(fn, value, false, false);
-    };
-    S.data = function data(value) {
+    }
+    function data(value) {
         var node = new DataNode(value);
         return function data(value) {
             if (arguments.length === 0) {
@@ -79,8 +77,8 @@
                 return node.next(value);
             }
         };
-    };
-    S.value = function value(current, eq) {
+    }
+    function value(current, eq) {
         var node = new DataNode(current), age = -1;
         return function value(update) {
             if (arguments.length === 0) {
@@ -99,8 +97,8 @@
                 return update;
             }
         };
-    };
-    S.freeze = function freeze(fn) {
+    }
+    function freeze(fn) {
         var result = undefined;
         if (RunningClock !== null) {
             result = fn();
@@ -117,41 +115,40 @@
             }
         }
         return result;
-    };
-    S.sample = function sample(fn) {
+    }
+    function sample(fn) {
         var result, listener = Listener;
         Listener = null;
         result = fn();
         Listener = listener;
         return result;
-    };
-    S.cleanup = function cleanup(fn) {
+    }
+    function cleanup(fn) {
         if (Owner === null)
             console.warn("cleanups created without a root or parent will never be run");
         else if (Owner.cleanups === null)
             Owner.cleanups = [fn];
         else
             Owner.cleanups.push(fn);
-    };
+    }
     // experimental : exposing node constructors and some state
-    S.makeDataNode = function makeDataNode(value) {
+    function makeDataNode(value) {
         return new DataNode(value);
-    };
-    S.makeComputationNode = makeComputationNode;
-    S.disposeNode = function disposeNode(node) {
+    }
+    function disposeNode(node) {
         if (RunningClock !== null) {
             RootClock.disposes.add(node);
         }
         else {
             dispose(node);
         }
-    };
-    S.isFrozen = function isFrozen() {
+    }
+    function isFrozen() {
         return RunningClock !== null;
-    };
-    S.isListening = function isListening() {
+    }
+    function isListening() {
         return Listener !== null;
-    };
+    }
     // Internal implementation
     /// Graph classes and operations
     var Clock = /** @class */ (function () {
@@ -480,14 +477,14 @@
             var owner = Owner, listener = Listener;
             Owner = Listener = node;
             node.state = RUNNING;
-            cleanup(node, false);
+            cleanupNode(node, false);
             node.value = node.fn(node.value);
             node.state = CURRENT;
             Owner = owner;
             Listener = listener;
         }
     }
-    function cleanup(node, final) {
+    function cleanupNode(node, final) {
         var source1 = node.source1, sources = node.sources, sourceslots = node.sourceslots, cleanups = node.cleanups, owned = node.owned, i, len;
         if (cleanups !== null) {
             for (i = 0; i < cleanups.length; i++) {
@@ -534,9 +531,24 @@
     function dispose(node) {
         node.fn = null;
         node.log = null;
-        cleanup(node, true);
+        cleanupNode(node, true);
     }
 
-    return S;
+    exports.comp = comp;
+    exports.root = root;
+    exports.on = on;
+    exports.effect = effect;
+    exports.data = data;
+    exports.value = value;
+    exports.freeze = freeze;
+    exports.sample = sample;
+    exports.cleanup = cleanup;
+    exports.makeDataNode = makeDataNode;
+    exports.makeComputationNode = makeComputationNode;
+    exports.disposeNode = disposeNode;
+    exports.isFrozen = isFrozen;
+    exports.isListening = isListening;
+
+    Object.defineProperty(exports, '__esModule', { value: true });
 
 })));

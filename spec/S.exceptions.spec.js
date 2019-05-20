@@ -3,8 +3,8 @@ describe("exceptions within S computations", function () {
         S.root(function () {
             var a = S.data(false),
                 b = S.data(1),
-                c = S(() => { if (a()) throw new Error("xxx"); }),
-                d = S(() => b());
+                c = S.comp(() => { if (a()) throw new Error("xxx"); }),
+                d = S.comp(() => b());
             
             expect(() => S.freeze(() => {
                 a(true);
@@ -20,8 +20,8 @@ describe("exceptions within S computations", function () {
         S.root(function () {
             var a = S.data(false),
                 b = S.data(1),
-                c = S(() => { if (a()) throw new Error("xxx"); }),
-                d = S(() => b());
+                c = S.comp(() => { if (a()) throw new Error("xxx"); }),
+                d = S.comp(() => b());
             
             expect(() => S.freeze(() => {
                 a(true);
@@ -41,8 +41,8 @@ describe("exceptions within S computations", function () {
         S.root(function () {
             var a = S.data(false),
                 b = S.data(1),
-                c = S(() => { if (a()) throw new Error("xxx"); }),
-                d = S(() => b());
+                c = S.comp(() => { if (a()) throw new Error("xxx"); }),
+                d = S.comp(() => b());
             
             expect(() => S.freeze(() => {
                 a(true);

@@ -3,7 +3,7 @@ describe("S.root(dispose)", function () {
 		S.root(function (dispose) {
 			var c = 0,
 				d = S.data(0),
-				f = S(function () { c++; return d(); });
+				f = S.comp(function () { c++; return d(); });
 
 			expect(c).toBe(1);
 			expect(f()).toBe(0);
@@ -28,7 +28,7 @@ describe("S.root(dispose)", function () {
 		S.root(function (dispose) {
 			var c = 0,
 				d = S.data(0),
-				f = S(function () { c++; if (d()) dispose(); d(); });
+				f = S.comp(function () { c++; if (d()) dispose(); d(); });
 
 			expect(c).toBe(1);
 
@@ -46,10 +46,10 @@ describe("S.root(dispose)", function () {
 		S.root(function (dispose) {
 			var c = 0,
 				d = S.data(0),
-				f = S(function () {
+				f = S.comp(function () {
 					c++;
 					d();
-					S(function () {	if (d()) dispose(); });
+					S.comp(function () {	if (d()) dispose(); });
 				});
 
 			expect(c).toBe(1);

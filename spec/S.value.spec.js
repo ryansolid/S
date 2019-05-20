@@ -18,7 +18,7 @@ describe("S.value", function () {
         S.root(function () {
             var d = S.value(1),
                 e = 0,
-                f = S(function () { d(); return ++e; });
+                f = S.comp(function () { d(); return ++e; });
 
             expect(f()).toBe(1);
             d(1);
@@ -30,7 +30,7 @@ describe("S.value", function () {
         S.root(function () {
             var d = S.value(1),
                 e = 0,
-                f = S(function () { d(); return ++e; });
+                f = S.comp(function () { d(); return ++e; });
 
             expect(f()).toBe(1);
             d(1);
@@ -44,7 +44,7 @@ describe("S.value", function () {
         S.root(function () {
             var d = S.value([1], function (a, b) { return a[0] === b[0]; }),
                 e = 0,
-                f = S(function () { d(); return ++e; });
+                f = S.comp(function () { d(); return ++e; });
 
             expect(f()).toBe(1);
             d([1]);
