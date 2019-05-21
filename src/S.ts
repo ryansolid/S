@@ -19,7 +19,6 @@ export function comp<T>(fn: (v: T | undefined) => T, value?: T): () => T {
   }
 };
 
-
 export function root<T>(fn: (dispose: () => void) => T, detachedOwner?: ComputationNode): T {
   var owner = Owner || detachedOwner || null,
     disposer = fn.length === 0 ? null : function _dispose() {
@@ -636,5 +635,6 @@ function cleanupSource(source: Log, slot: number) {
 function dispose(node: ComputationNode) {
   node.fn = null;
   node.log = null;
+  node.owner = null;
   cleanupNode(node, true);
 }

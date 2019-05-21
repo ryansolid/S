@@ -28,6 +28,8 @@ export declare function disposeNode(node: ComputationNode): void;
 export declare function isFrozen(): boolean;
 export declare function isListening(): boolean;
 export declare function getContextOwner(): ComputationNode | null;
+export declare function setContext(key: symbol | string, value: any): void;
+export declare function lookupContext(key: symbol | string): any;
 declare class DataNode {
     value: any;
     pending: any;
@@ -42,6 +44,7 @@ declare class DataNode {
 declare class ComputationNode {
     fn: ((v: any) => any) | null;
     value: any;
+    context: any;
     age: number;
     state: number;
     source1: Log | null;
@@ -49,6 +52,7 @@ declare class ComputationNode {
     sources: Log[] | null;
     sourceslots: number[] | null;
     log: Log | null;
+    owner: ComputationNode | null;
     owned: ComputationNode[] | null;
     cleanups: ((final: boolean) => void)[] | null;
     constructor();
