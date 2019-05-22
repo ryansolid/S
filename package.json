@@ -1,6 +1,6 @@
 {
-  "name": "s-js",
-  "version": "0.4.9",
+  "name": "@ryansolid/s-js",
+  "version": "0.4.10",
   "description": "S.js - simple, clean, fast reactive programming in Javascript",
   "main": "dist/S.js",
   "module": "dist/es/S.js",
@@ -28,10 +28,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/adamhaile/S.git"
+    "url": "https://github.com/ryansolid/S.git"
   },
   "bugs": {
-    "url": "https://github.com/adamhaile/S/issues"
+    "url": "https://github.com/ryansolid/S/issues"
   },
   "author": "Adam Haile",
   "license": "MIT"

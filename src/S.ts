@@ -511,7 +511,7 @@ function run(clock: Clock) {
     clock.updates.run(updateNode);
     clock.disposes.run(dispose);
 
-    // if there are still changes after excessive batches, assume runaway            
+    // if there are still changes after excessive batches, assume runaway
     if (count++ > 1e5) {
       throw new Error("Runaway clock detected");
     }

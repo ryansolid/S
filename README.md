@@ -1,6 +1,8 @@
 # S.js
 
-S.js is a small reactive programming library.  It combines an automatic dependency graph with a synchronous execution engine.  The goal is to make reactive programming simple, clean, and fast.  
+This library is fork for the purpose of using with the [Dom Expressions](https://github.com/ryansolid/dom-expressions.git) library. It adds treeshaking and a context API. The original is at: [https://github.com/adamhaile/S.git](https://github.com/adamhaile/S.git).
+
+S.js is a small reactive programming library.  It combines an automatic dependency graph with a synchronous execution engine.  The goal is to make reactive programming simple, clean, and fast.
 
 An S app consists of *data signals* and *computations*:
 
