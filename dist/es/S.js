@@ -14,7 +14,7 @@ export function comp(fn, value) {
 }
 ;
 export function root(fn, detachedOwner) {
-    var owner = detachedOwner || Owner, disposer = fn.length === 0 ? null : function _dispose() {
+    var owner = Owner, disposer = fn.length === 0 ? null : function _dispose() {
         if (root === null) {
             // nothing to dispose
         }
@@ -25,7 +25,7 @@ export function root(fn, detachedOwner) {
             dispose(root);
         }
     }, root = disposer === null ? UNOWNED : getCandidateNode(), result;
-    root.owner = owner;
+    root.owner = detachedOwner || Owner;
     Owner = root;
     try {
         result = disposer === null ? fn() : fn(disposer);

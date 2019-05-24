@@ -19,7 +19,7 @@
         }
     }
     function root(fn, detachedOwner) {
-        var owner = detachedOwner || Owner, disposer = fn.length === 0 ? null : function _dispose() {
+        var owner = Owner, disposer = fn.length === 0 ? null : function _dispose() {
             if (root === null) ;
             else if (RunningClock !== null) {
                 RootClock.disposes.add(root);
@@ -28,7 +28,7 @@
                 dispose(root);
             }
         }, root = disposer === null ? UNOWNED : getCandidateNode(), result;
-        root.owner = owner;
+        root.owner = detachedOwner || Owner;
         Owner = root;
         try {
             result = disposer === null ? fn() : fn(disposer);
