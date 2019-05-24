@@ -1,6 +1,6 @@
 {
   "name": "@ryansolid/s-js",
-  "version": "0.4.13",
+  "version": "0.4.14",
   "description": "S.js - simple, clean, fast reactive programming in Javascript",
   "main": "dist/S.js",
   "module": "dist/es/S.js",
