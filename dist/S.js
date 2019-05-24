@@ -28,6 +28,7 @@
                 dispose(root);
             }
         }, root = disposer === null ? UNOWNED : getCandidateNode(), result;
+        root.owner = owner;
         Owner = root;
         try {
             result = disposer === null ? fn() : fn(disposer);

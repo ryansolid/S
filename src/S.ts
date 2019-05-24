@@ -32,7 +32,7 @@ export function root<T>(fn: (dispose: () => void) => T, detachedOwner?: Computat
     },
     root = disposer === null ? UNOWNED : getCandidateNode(),
     result: T;
-
+  root.owner = owner;
   Owner = root;
 
   try {
