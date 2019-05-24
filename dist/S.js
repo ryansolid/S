@@ -19,7 +19,7 @@
         }
     }
     function root(fn, detachedOwner) {
-        var owner = Owner || detachedOwner || null, disposer = fn.length === 0 ? null : function _dispose() {
+        var owner = detachedOwner || Owner, disposer = fn.length === 0 ? null : function _dispose() {
             if (root === null) ;
             else if (RunningClock !== null) {
                 RootClock.disposes.add(root);
@@ -442,7 +442,7 @@
             clock.changes.run(applyDataChange);
             clock.updates.run(updateNode);
             clock.disposes.run(dispose);
-            // if there are still changes after excessive batches, assume runaway            
+            // if there are still changes after excessive batches, assume runaway
             if (count++ > 1e5) {
                 throw new Error("Runaway clock detected");
             }

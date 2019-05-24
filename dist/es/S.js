@@ -14,7 +14,7 @@ export function comp(fn, value) {
 }
 ;
 export function root(fn, detachedOwner) {
-    var owner = Owner || detachedOwner || null, disposer = fn.length === 0 ? null : function _dispose() {
+    var owner = detachedOwner || Owner, disposer = fn.length === 0 ? null : function _dispose() {
         if (root === null) {
             // nothing to dispose
         }
@@ -450,7 +450,7 @@ function run(clock) {
         clock.changes.run(applyDataChange);
         clock.updates.run(updateNode);
         clock.disposes.run(dispose);
-        // if there are still changes after excessive batches, assume runaway            
+        // if there are still changes after excessive batches, assume runaway
         if (count++ > 1e5) {
             throw new Error("Runaway clock detected");
         }
