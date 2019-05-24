@@ -20,7 +20,7 @@ export function comp<T>(fn: (v: T | undefined) => T, value?: T): () => T {
 };
 
 export function root<T>(fn: (dispose: () => void) => T, detachedOwner?: ComputationNode): T {
-  var owner = Owner || detachedOwner || null,
+  var owner = detachedOwner || Owner,
     disposer = fn.length === 0 ? null : function _dispose() {
       if (root === null) {
         // nothing to dispose
